@@ -2,14 +2,16 @@
 // import './App.css';
 
 import React, { Component } from 'react'
+import Navbar from './components/Navbar'
+import News from './components/News'
 
 export default class App extends Component {
   //Defining a Method Like OOPs
-  c = 'Ajmat'
   render() {
     return (
       <div>
-        Hello I am her! {this.c}
+        <Navbar />
+        <News />
       </div>
     )
   }
