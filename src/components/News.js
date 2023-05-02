@@ -283,15 +283,14 @@ export class News extends Component {
       <div className='container my-5'>
         <h1 className='text-align-center'>Newsmat - Today's Top Headlines</h1>
         <div className="row">
-            <div className="col-md-4">
-                <NewsItem title="My Title" description="This is a simple description" imageurl="dhfjh" newsurl="TODO"/>
+        {/* Mapping/looping using states and populating the cards: */}
+        {/* map is a higher order js arrray traversal method */}
+        {this.state.articles.map((element) => {
+            // console.log(element)
+            return <div className="col-md-4" key={element.url}>
+                <NewsItem  title={element.title.slice(0,30)} description={element.description}  imageurl={element.urlToImage} newsurl={element.url}/>
             </div>
-            <div className="col-md-4">
-                <NewsItem title="My Title" description="This is a simple description"/>
-            </div>
-            <div className="col-md-4">
-                <NewsItem title="My Title" description="This is a simple description"/>
-            </div>
+        })}
         </div>
       </div>
     )
