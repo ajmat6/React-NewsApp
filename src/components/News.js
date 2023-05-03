@@ -267,6 +267,45 @@ export class News extends Component {
     //     }
     // ]
 
+    handleNextClick = async () => {
+        // console.log("This runs after the render method");
+
+        //if the page no is equal to ceil of the total no of news per page * no of pages then it is last page and you cannot go on the next page
+        if(this.state.page < Math.ceil(this.state.totalResults/15)){
+            let url = `https://newsapi.org/v2/everything?q=technology&from=2023-04-03&sortBy=publishedAt&apiKey=8b51c3d983c244c7b952fb04c988cbf4&pageSize=15&page=${this.state.page + 1}`; //increasing page no by 1
+
+            let data = await fetch(url); //using async await 
+            let myData = await data.json();
+            console.log(myData);
+            // this.setState({articles: myData.articles});
+
+            this.setState({
+                page: this.state.page + 1,
+                articles: myData.articles
+            });
+        }
+
+        else{
+        
+        }
+    }
+
+    handlePreviousClick = async () => {
+        // console.log("This runs after the render method");
+
+        let url = `https://newsapi.org/v2/everything?q=technology&from=2023-04-03&sortBy=publishedAt&apiKey=8b51c3d983c244c7b952fb04c988cbf4&pageSize=15&page=${this.state.page - 1}`; //Decreasing page value by 1
+
+        let data = await fetch(url); //using async await 
+        let myData = await data.json();
+        console.log(myData);
+        // this.setState({articles: myData.articles});
+
+        this.setState({
+            page: this.state.page - 1,
+            articles: myData.articles
+        })
+    }
+
   //constructor of NewsItem and it will the part in console no of times as your newsitems are:
   constructor(){
     super(); //calling super class constructor (if not mentioned will give error)
@@ -275,36 +314,46 @@ export class News extends Component {
         //making an object of the state and accesing articles array:
         // articles: this.articles,  when we were using static news
         articles: [],
-        loading: false 
+        loading: false,
+        page: 1
     }
   }
 
   async componentDidMount(){
     console.log("This runs after the render method");
-    let url = "https://newsapi.org/v2/everything?q=technology&from=2023-04-02&sortBy=publishedAt&apiKey=8b51c3d983c244c7b952fb04c988cbf4";
+    let url = "https://newsapi.org/v2/everything?q=technology&from=2023-04-03&sortBy=publishedAt&apiKey=8b51c3d983c244c7b952fb04c988cbf4&pageSize=15&page=1";
 
     let data = await fetch(url); //using async await 
     let myData = await data.json();
+    var totalres = myData.totalResults;
     console.log(myData);
-    this.setState({articles: myData.articles});
+    this.setState({articles: myData.articles, totalResults: myData.totalResults}); //setting totalresults in the state
   }
 
   render() {
     return (
-      <div className='container my-5'>
-        <h1 className='text-align-center'>Newsmat - Today's Top Headlines</h1>
-        <div className="row">
-        {/* Mapping/looping using states and populating the cards: */}
-        {/* map is a higher order js arrray traversal method */}
-        {this.state.articles.map((element) => {
-            // console.log(element)
-            return <div className="col-md-4" key={element.url}>
-                {/* below ternary condition is applied for title and description if they become null */}
-                <NewsItem  title={element.title != null?element.title.slice(0,30):""} description={element.description != null? element.description.slice(0,80):""}  imageurl={element.urlToImage} newsurl={element.url}/>
+        <>
+        <div className='container my-5'>
+            <h1 className='text-align-center mx-5'>Newsmat - Today's Top Headlines</h1>
+            <div className="row">
+            {/* Mapping/looping using states and populating the cards: */}
+            {/* map is a higher order js arrray traversal method */}
+            {this.state.articles.map((element) => {
+                // console.log(element)
+                return <div className="col-md-4" key={element.url}>
+                    {/* below ternary condition is applied for title and description if they become null */}
+                    <NewsItem  title={element.title != null?element.title.slice(0,30):""} description={element.description != null? element.description.slice(0,80):""}  imageurl={element.urlToImage} newsurl={element.url}/>
+                </div>
+            })}
             </div>
-        })}
         </div>
-      </div>
+
+        <div className="container my-4 d-flex justify-content-around">
+            <button disabled={this.state.page<=1} type="button" class="btn btn-dark" onClick={this.handlePreviousClick}>&larr; Previous</button>
+            <button disabled={this.state.page==800} type="button" class="btn btn-dark" onClick={this.handleNextClick}>Next &rarr;</button>
+        </div>
+      </>
+      
     )
   }
 }
