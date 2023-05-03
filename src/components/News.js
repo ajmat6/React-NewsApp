@@ -4,6 +4,19 @@ import NewsItem from './NewsItem'
 import Spinner from './Spinner';
 
 export class News extends Component {
+    static defaultProps = {
+        country: 'in',
+        pageSize: 5,
+        category: 'general'
+    }
+
+    static  propTypes = {
+        country: PropTypes.string,
+        pageSize: PropTypes.number,
+        category: PropTypes.string
+    }
+
+
     // //making an array of the articles:
     // articles = [
     //     {
@@ -270,7 +283,7 @@ export class News extends Component {
 
     handleNextClick = async () => {
         // console.log("This runs after the render method");
-        let url = `https://newsapi.org/v2/everything?q=technology&from=2023-04-03&sortBy=publishedAt&apiKey=8b51c3d983c244c7b952fb04c988cbf4&pageSize=${this.props.pageSize}&page=${this.state.page + 1}`; //increasing page no by 1
+        let url = `https://newsapi.org/v2/top-headlines?&sortBy=publishedAt&category=${this.props.category}&apiKey=8b51c3d983c244c7b952fb04c988cbf4&pageSize=${this.props.pageSize}&page=${this.state.page + 1}&country=${this.props.country}`; //increasing page no by 1
 
         this.setState({loading: true});
 
@@ -290,15 +303,14 @@ export class News extends Component {
     handlePreviousClick = async () => {
         // console.log("This runs after the render method");
 
-        let url = `https://newsapi.org/v2/everything?q=technology&from=2023-04-03&sortBy=publishedAt&apiKey=8b51c3d983c244c7b952fb04c988cbf4&pageSize=${this.props.pageSize}5&page=${this.state.page - 1}`; //Decreasing page value by 1
+        let url = `https://newsapi.org/v2/top-headlines?&sortBy=publishedAt&category=${this.props.category}&apiKey=8b51c3d983c244c7b952fb04c988cbf4&country=${this.props.country}&pageSize=${this.props.pageSize}&page=${this.state.page - 1}`; //Decreasing page value by 1
 
         this.setState({loading: true});
 
 
         let data = await fetch(url); //using async await 
         let myData = await data.json();
-        console.log(myData);
-        // this.setState({articles: myData.articles});
+        // console.log(myData);
 
         this.setState({
             page: this.state.page - 1,
@@ -322,7 +334,7 @@ export class News extends Component {
 
   async componentDidMount(){
     console.log("This runs after the render method");
-    let url = `https://newsapi.org/v2/everything?q=technology&from=2023-04-03&sortBy=publishedAt&apiKey=8b51c3d983c244c7b952fb04c988cbf4&pageSize=${this.props.pageSize}&page=1`;
+    let url = `https://newsapi.org/v2/top-headlines?&sortBy=publishedAt&country=${this.props.country}&category=${this.props.category}&apiKey=8b51c3d983c244c7b952fb04c988cbf4&pageSize=${this.props.pageSize}&page=1`;
 
     this.setState({loading: true});
 
@@ -345,6 +357,7 @@ export class News extends Component {
             <div className="row">
             {/* Mapping/looping using states and populating the cards: */}
             {/* map is a higher order js arrray traversal method */}
+            {/* when spinner is loading then not to show the news else show it */}
             {!this.state.loading && this.state.articles.map((element) => {
                 // console.log(element)
                 return <div className="col-md-4" key={element.url}>
