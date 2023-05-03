@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import NewsItem from './NewsItem'
+import Spinner from './Spinner';
 
 export class News extends Component {
     // //making an array of the articles:
@@ -269,31 +270,30 @@ export class News extends Component {
 
     handleNextClick = async () => {
         // console.log("This runs after the render method");
+        let url = `https://newsapi.org/v2/everything?q=technology&from=2023-04-03&sortBy=publishedAt&apiKey=8b51c3d983c244c7b952fb04c988cbf4&pageSize=${this.props.pageSize}&page=${this.state.page + 1}`; //increasing page no by 1
 
-        //if the page no is equal to ceil of the total no of news per page * no of pages then it is last page and you cannot go on the next page
-        if(this.state.page < Math.ceil(this.state.totalResults/15)){
-            let url = `https://newsapi.org/v2/everything?q=technology&from=2023-04-03&sortBy=publishedAt&apiKey=8b51c3d983c244c7b952fb04c988cbf4&pageSize=15&page=${this.state.page + 1}`; //increasing page no by 1
+        this.setState({loading: true});
 
-            let data = await fetch(url); //using async await 
-            let myData = await data.json();
-            console.log(myData);
-            // this.setState({articles: myData.articles});
 
-            this.setState({
-                page: this.state.page + 1,
-                articles: myData.articles
-            });
-        }
+        let data = await fetch(url); //using async await 
+        let myData = await data.json();
+        console.log(myData);
+        // this.setState({articles: myData.articles});
 
-        else{
-        
-        }
+        this.setState({
+            page: this.state.page + 1,
+            articles: myData.articles,
+            loading: false
+        });
     }
 
     handlePreviousClick = async () => {
         // console.log("This runs after the render method");
 
-        let url = `https://newsapi.org/v2/everything?q=technology&from=2023-04-03&sortBy=publishedAt&apiKey=8b51c3d983c244c7b952fb04c988cbf4&pageSize=15&page=${this.state.page - 1}`; //Decreasing page value by 1
+        let url = `https://newsapi.org/v2/everything?q=technology&from=2023-04-03&sortBy=publishedAt&apiKey=8b51c3d983c244c7b952fb04c988cbf4&pageSize=${this.props.pageSize}5&page=${this.state.page - 1}`; //Decreasing page value by 1
+
+        this.setState({loading: true});
+
 
         let data = await fetch(url); //using async await 
         let myData = await data.json();
@@ -302,7 +302,8 @@ export class News extends Component {
 
         this.setState({
             page: this.state.page - 1,
-            articles: myData.articles
+            articles: myData.articles,
+            loading: false
         })
     }
 
@@ -321,24 +322,30 @@ export class News extends Component {
 
   async componentDidMount(){
     console.log("This runs after the render method");
-    let url = "https://newsapi.org/v2/everything?q=technology&from=2023-04-03&sortBy=publishedAt&apiKey=8b51c3d983c244c7b952fb04c988cbf4&pageSize=15&page=1";
+    let url = `https://newsapi.org/v2/everything?q=technology&from=2023-04-03&sortBy=publishedAt&apiKey=8b51c3d983c244c7b952fb04c988cbf4&pageSize=${this.props.pageSize}&page=1`;
+
+    this.setState({loading: true});
 
     let data = await fetch(url); //using async await 
     let myData = await data.json();
     var totalres = myData.totalResults;
     console.log(myData);
-    this.setState({articles: myData.articles, totalResults: myData.totalResults}); //setting totalresults in the state
+    this.setState({articles: myData.articles, totalResults: myData.totalResults, loading: false}); //setting totalresults in the state
   }
 
   render() {
     return (
         <>
         <div className='container my-5'>
-            <h1 className='text-align-center mx-5'>Newsmat - Today's Top Headlines</h1>
+            <h1 className='text-center'>Newsmat - Today's Top Headlines</h1>
+
+            {/* when loading state is true only then to show loading spinner */}
+            {this.state.loading && <Spinner />}
+
             <div className="row">
             {/* Mapping/looping using states and populating the cards: */}
             {/* map is a higher order js arrray traversal method */}
-            {this.state.articles.map((element) => {
+            {!this.state.loading && this.state.articles.map((element) => {
                 // console.log(element)
                 return <div className="col-md-4" key={element.url}>
                     {/* below ternary condition is applied for title and description if they become null */}
@@ -350,7 +357,7 @@ export class News extends Component {
 
         <div className="container my-4 d-flex justify-content-around">
             <button disabled={this.state.page<=1} type="button" class="btn btn-dark" onClick={this.handlePreviousClick}>&larr; Previous</button>
-            <button disabled={this.state.page==800} type="button" class="btn btn-dark" onClick={this.handleNextClick}>Next &rarr;</button>
+            <button disabled={this.state.page == Math.ceil(this.state.totalResults/this.props.pageSize)} type="button" class="btn btn-dark" onClick={this.handleNextClick}>Next &rarr;</button>
         </div>
       </>
       
