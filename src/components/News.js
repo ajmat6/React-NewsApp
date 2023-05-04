@@ -16,42 +16,31 @@ export class News extends Component {
         category: PropTypes.string
     }
 
-    handleNextClick = async () => {
-        // console.log("This runs after the render method");
-        let url = `https://newsapi.org/v2/top-headlines?&sortBy=publishedAt&category=${this.props.category}&apiKey=8b51c3d983c244c7b952fb04c988cbf4&pageSize=${this.props.pageSize}&page=${this.state.page + 1}&country=${this.props.country}`; //increasing page no by 1
+    async update(){
+        let url = `https://newsapi.org/v2/top-headlines?&sortBy=publishedAt&category=${this.props.category}&apiKey=8b51c3d983c244c7b952fb04c988cbf4&country=${this.props.country}&pageSize=${this.props.pageSize}&page=${this.state.page}`;
 
         this.setState({loading: true});
 
-
-        let data = await fetch(url); //using async await 
+        let data = await fetch(url); 
         let myData = await data.json();
         console.log(myData);
-        // this.setState({articles: myData.articles});
+
 
         this.setState({
-            page: this.state.page + 1,
-            articles: myData.articles,
-            loading: false
-        });
-    }
-
-    handlePreviousClick = async () => {
-        // console.log("This runs after the render method");
-
-        let url = `https://newsapi.org/v2/top-headlines?&sortBy=publishedAt&category=${this.props.category}&apiKey=8b51c3d983c244c7b952fb04c988cbf4&country=${this.props.country}&pageSize=${this.props.pageSize}&page=${this.state.page - 1}`; //Decreasing page value by 1
-
-        this.setState({loading: true});
-
-
-        let data = await fetch(url); //using async await 
-        let myData = await data.json();
-        // console.log(myData);
-
-        this.setState({
-            page: this.state.page - 1,
+            page: this.state.page,
             articles: myData.articles,
             loading: false
         })
+    }
+
+    handleNextClick = async () => {
+        await this.setState({page: this.state.page + 1});
+        this.update(); //calling update function
+    }
+
+    handlePreviousClick = async () => {
+        await this.setState({page: this.state.page - 1})
+        this.update();
     }
 
   //constructor of NewsItem and it will the part in console no of times as your newsitems are:
@@ -69,7 +58,7 @@ export class News extends Component {
 
   async componentDidMount(){
     console.log("This runs after the render method");
-    let url = `https://newsapi.org/v2/top-headlines?&sortBy=publishedAt&country=${this.props.country}&category=${this.props.category}&apiKey=8b51c3d983c244c7b952fb04c988cbf4&pageSize=${this.props.pageSize}&page=1`;
+    let url = `https://newsapi.org/v2/top-headlines?&sortBy=publishedAt&country=${this.props.country}&category=${this.props.category}&apiKey=8b51c3d983c244c7b952fb04c988cbf4&pageSize=${this.props.pageSize}&page=${this.state.page}`;
 
     this.setState({loading: true});
 
