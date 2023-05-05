@@ -43,9 +43,13 @@ export class News extends Component {
         this.update();
     }
 
+    captilizeFirstLetter = (string) => {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
   //constructor of NewsItem and it will the part in console no of times as your newsitems are:
-  constructor(){
-    super(); //calling super class constructor (if not mentioned will give error)
+  constructor(props){
+    super(props); //calling super class constructor (if not mentioned will give error) , to pass props you have to mention props
     console.log("This is a news component constructor");
     this.state = {
         //making an object of the state and accesing articles array:
@@ -54,6 +58,8 @@ export class News extends Component {
         loading: false,
         page: 1
     }
+
+    document.title = `${this.captilizeFirstLetter(this.props.category)} - NewsMat` //changing the title dynamically
   }
 
   async componentDidMount(){
@@ -73,7 +79,8 @@ export class News extends Component {
     return (
         <>
         <div className='container my-5'>
-            <h1 className='text-center'>Newsmat - Today's Top Headlines</h1>
+            {/* changing the headline dynamically */}
+            <h1 className='text-center'>NewsMat - Top {this.captilizeFirstLetter(this.props.category)} Headlines</h1>
 
             {/* when loading state is true only then to show loading spinner */}
             {this.state.loading && <Spinner />}
