@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import NewsItem from './NewsItem'
 import Spinner from './Spinner';
+import InfiniteScroll from 'react-infinite-scroll-component'
 
 export class News extends Component {
     static defaultProps = {
@@ -28,26 +29,28 @@ export class News extends Component {
 
         this.setState({
             page: this.state.page,
+            totalResults: myData.totalResults,
             articles: myData.articles,
             loading: false
         })
     }
 
-    handleNextClick = async () => {
-        await this.setState({page: this.state.page + 1});
-        this.update(); //calling update function
-    }
+    // handleNextClick = async () => {
+    //     await this.setState({page: this.state.page + 1});
+    //     this.update(); //calling update function
+    // }
 
-    handlePreviousClick = async () => {
-        await this.setState({page: this.state.page - 1})
-        this.update();
-    }
+    // handlePreviousClick = async () => {
+    //     await this.setState({page: this.state.page - 1})
+    //     this.update();
+    // }
 
+    //function to make starting letter of a string capital:
     captilizeFirstLetter = (string) => {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
-  //constructor of NewsItem and it will the part in console no of times as your newsitems are:
+  //constructor of NewsItem and it will the run in console no of times as your newsitems are:
   constructor(props){
     super(props); //calling super class constructor (if not mentioned will give error) , to pass props you have to mention props
     console.log("This is a news component constructor");
@@ -55,25 +58,38 @@ export class News extends Component {
         //making an object of the state and accesing articles array:
         // articles: this.articles,  when we were using static news
         articles: [],
-        loading: false,
-        page: 1
+        loading: true,
+        page: 1,
+        totalResults: 0, //default totalresults are zero
+        nowArticles: 0
     }
 
-    document.title = `${this.captilizeFirstLetter(this.props.category)} - NewsMat` //changing the title dynamically
+    // document.title = `${this.captilizeFirstLetter(this.props.category)} - NewsMat` //changing the title dynamically
   }
 
   async componentDidMount(){
-    console.log("This runs after the render method");
-    let url = `https://newsapi.org/v2/top-headlines?&sortBy=publishedAt&country=${this.props.country}&category=${this.props.category}&apiKey=8b51c3d983c244c7b952fb04c988cbf4&pageSize=${this.props.pageSize}&page=${this.state.page}`;
+    this.update();
+  }
+
+  fetchMoreData = async () => {
+    this.setState({page: this.state.page + 1});
+    let url = `https://newsapi.org/v2/top-headlines?&sortBy=publishedAt&category=${this.props.category}&apiKey=8b51c3d983c244c7b952fb04c988cbf4&country=${this.props.country}&pageSize=${this.props.pageSize}&page=${this.state.page}`;
 
     this.setState({loading: true});
 
-    let data = await fetch(url); //using async await 
+    let data = await fetch(url); 
     let myData = await data.json();
-    var totalres = myData.totalResults;
     console.log(myData);
-    this.setState({articles: myData.articles, totalResults: myData.totalResults, loading: false}); //setting totalresults in the state
-  }
+
+
+    this.setState({
+        // nowArticles: this.nowArticles + this.articles.length,
+        page: this.state.page,
+        totalResults: myData.totalResults,
+        articles: this.state.articles.concat(myData.articles),
+        loading: false
+    })
+  };
 
   render() {
     return (
@@ -85,11 +101,21 @@ export class News extends Component {
             {/* when loading state is true only then to show loading spinner */}
             {this.state.loading && <Spinner />}
 
+            {/* react infiniter scroll */}
+            <InfiniteScroll
+                dataLength={this.state.articles.length}
+                next={this.fetchMoreData}
+                hasMore={this.state.articles.length !== this.state.totalResults} //has more conditions
+                loader={this.state.loading && <Spinner />} //this worked for removing the spinner at the end of the articles
+            >
+            {/* Below container div is used for removing the horizontal scroller */}
+            <div className="container">
             <div className="row">
             {/* Mapping/looping using states and populating the cards: */}
             {/* map is a higher order js arrray traversal method */}
             {/* when spinner is loading then not to show the news else show it */}
-            {!this.state.loading && this.state.articles.map((element) => {
+            {/* {!this.state.loading && this.state.articles.map((element) => { */}
+            {this.state.articles.map((element) => {
                 // console.log(element)
                 return <div className="col-md-4" key={element.url}>
                     {/* below ternary condition is applied for title and description if they become null */}
@@ -97,12 +123,15 @@ export class News extends Component {
                 </div>
             })}
             </div>
+            </div>
+            </InfiniteScroll>
         </div>
 
-        <div className="container my-4 d-flex justify-content-around">
+        {/* Below are buttons used fro previous and next buttons */}
+        {/* <div className="container my-4 d-flex justify-content-around">
             <button disabled={this.state.page<=1} type="button" className="btn btn-dark" onClick={this.handlePreviousClick}>&larr; Previous</button>
             <button disabled={this.state.page == Math.ceil(this.state.totalResults/this.props.pageSize)} type="button" className="btn btn-dark" onClick={this.handleNextClick}>Next &rarr;</button>
-        </div>
+        </div> */}
       </>
       
     )
