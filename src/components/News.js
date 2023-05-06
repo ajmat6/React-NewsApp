@@ -18,12 +18,16 @@ export class News extends Component {
     }
 
     async update(){
+        this.props.setProgress(10); //setting progress bar value 10 intially as it was coming late
         let url = `https://newsapi.org/v2/top-headlines?&sortBy=publishedAt&category=${this.props.category}&apiKey=8b51c3d983c244c7b952fb04c988cbf4&country=${this.props.country}&pageSize=${this.props.pageSize}&page=${this.state.page}`;
 
+        
         this.setState({loading: true});
-
+        
         let data = await fetch(url); 
+        this.props.setProgress(30);
         let myData = await data.json();
+        this.props.setProgress(70);
         console.log(myData);
 
 
@@ -33,6 +37,7 @@ export class News extends Component {
             articles: myData.articles,
             loading: false
         })
+        this.props.setProgress(100); //setting progress 100 when component has loaded
     }
 
     // handleNextClick = async () => {
