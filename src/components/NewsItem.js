@@ -1,10 +1,11 @@
-import React, { Component } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 
-export class NewsItem extends Component {
-    render() {
+//only this.props to props and export class to an arrow function Here and same is for Spinner and Navbar component
+
+const NewsItem = (props) => {
     //Destructuring and pulling title and description from props:
-    let {title,description, imageurl, newsurl, author, date, sources} = this.props;  
+    let {title,description, imageurl, newsurl, author, date, sources} = props;  
     return (
       <div className='my-3 mx-5'>
         <div className="card" style={{height: '32rem'}}>
@@ -30,7 +31,6 @@ export class NewsItem extends Component {
         </div>
       </div>
     )
-  }
 }
 
 export default NewsItem
