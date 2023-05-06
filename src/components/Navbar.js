@@ -3,10 +3,6 @@ import PropTypes from 'prop-types'
 import {Link} from 'react-router-dom'
 
 export class Navbar extends Component {
-  static propTypes = {
-
-  }
-
   render() {
     return (
       <div>
