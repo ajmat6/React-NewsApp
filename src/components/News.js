@@ -27,8 +27,7 @@ const News = (props) => {
     const [loading, setloading] = useState(true)
     const [page, setpage] = useState(1)
     const [totalResults, settotalResults] = useState(0)
-    // document.title = `${this.captilizeFirstLetter(this.props.category)} - NewsMat` //changing the title dynamically
-
+    
     const update = async () => {
         // async update(){ how it was in class based component
         // this.props.setProgress(10); //setting progress bar value 10 intially as it was coming late
@@ -38,16 +37,16 @@ const News = (props) => {
         // let url = `https://newsapi.org/v2/top-headlines?&sortBy=publishedAt&category=${this.props.category}&apiKey=${this.props.apikey}&country=${this.props.country}&pageSize=${this.props.pageSize}&page=${this.state.page}`;
 
         let url = `https://newsapi.org/v2/top-headlines?&sortBy=publishedAt&category=${props.category}&apiKey=${props.apikey}&country=${props.country}&pageSize=${props.pageSize}&page=${page}`;
-
+        
         
         // this.setState({loading: true});
         setloading(true);
         
         let data = await fetch(url); 
-
+        
         // this.props.setProgress(30);
         props.setProgress(30);
-
+        
         let myData = await data.json();
 
         // this.props.setProgress(70);
@@ -73,15 +72,15 @@ const News = (props) => {
     }
 
     // handleNextClick = async () => {
-    //     await this.setState({page: this.state.page + 1});
+        //     await this.setState({page: this.state.page + 1});
     //     this.update(); //calling update function
     // }
-
+    
     // handlePreviousClick = async () => {
-    //     await this.setState({page: this.state.page - 1})
+        //     await this.setState({page: this.state.page - 1})
     //     this.update();
     // }
-
+    
     //function to make starting letter of a string capital:
     const captilizeFirstLetter = (string) => {
         return string.charAt(0).toUpperCase() + string.slice(1);
@@ -94,34 +93,36 @@ const News = (props) => {
 //     super(props); //calling super class constructor (if not mentioned will give error) , to pass props you have to mention props
 //     // console.log("This is a news component constructor");
 //     this.state = {
-//         //making an object of the state and accesing articles array:
-//         // articles: this.articles,  when we were using static news
-//         articles: [],
-//         loading: true,
-//         page: 1,
-//         totalResults: 0, //default totalresults are zero
-//     }
-
-//     // document.title = `${this.captilizeFirstLetter(this.props.category)} - NewsMat` //changing the title dynamically
-//   }
-
-
-// Below is used in class based and it run once and its work is done by useEffect in funciton based component:
-//   async componentDidMount(){
-//     this.update();
-//   }
-
-    //useEffect hook is used in place of componentDidMount in function based component
-    useEffect(() => {
-        update();
-    }, []) //in brackets we have to put the part which it listens on the change of which it runs and here we had just kept it blank
+    //         //making an object of the state and accesing articles array:
+    //         // articles: this.articles,  when we were using static news
+    //         articles: [],
+    //         loading: true,
+    //         page: 1,
+    //         totalResults: 0, //default totalresults are zero
+    //     }
+    
+    //     // document.title = `${this.captilizeFirstLetter(this.props.category)} - NewsMat` //changing the title dynamically
+    //   }
+    
+    
+    // Below is used in class based and it run once and its work is done by useEffect in funciton based component:
+    //   async componentDidMount(){
+        //     this.update();
+        //   }
+        
+        //useEffect hook is used in place of componentDidMount in function based component
+        useEffect(() => {
+            update();
+            document.title = `${captilizeFirstLetter(props.category)} - NewsMat` //changing the title dynamically
+        }, []) //in brackets we have to put the part which it listens on the change of which it runs and here we had just kept it blank
     
 
     const fetchMoreData = async () => {
         // this.setState({page: this.state.page + 1});
+        
+        let url = `https://newsapi.org/v2/top-headlines?&sortBy=publishedAt&category=${props.category}&apiKey=${props.apikey}&country=${props.country}&pageSize=${props.pageSize}&page=${page+1}`;//setting the page manually as setpage is not able to set page as it asynchronous function. So you have increased setpage below and it also resolved the error of first page loading two times.
+        
         setpage(page+1);
-
-        let url = `https://newsapi.org/v2/top-headlines?&sortBy=publishedAt&category=${props.category}&apiKey=${props.apikey}&country=${props.country}&pageSize=${props.pageSize}&page=${page}`;
 
         // this.setState({loading: true});
         setloading(true);
@@ -139,7 +140,6 @@ const News = (props) => {
         //     loading: false
         // })
 
-        // setpage(page);
         settotalResults(myData.totalResults);
         setarticles(articles.concat(myData.articles));
         setloading(false);
@@ -149,7 +149,7 @@ const News = (props) => {
         <div className='container my-5'>
             {/* changing the headline dynamically */}
             {/* <h1 className='text-center'>NewsMat - Top {this.captilizeFirstLetter(this.props.category)} Headlines</h1> */}
-            <h1 className='text-center'>NewsMat - Top {captilizeFirstLetter(props.category)} Headlines</h1>
+            <h1 className='text-center' style={{marginTop: '5rem', marginBottom: '1rem'}}>NewsMat - Top {captilizeFirstLetter(props.category)} Headlines</h1>
 
             {/* when loading state is true only then to show loading spinner */}
             {/* {this.state.loading && <Spinner />} */}
